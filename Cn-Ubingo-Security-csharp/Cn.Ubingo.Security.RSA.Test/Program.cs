@@ -23,8 +23,10 @@ namespace Cn.Ubingo.Security.RSA.Test
             //VerifySignatureMicrosoft();
             //ReadAsnKey();
             //ReadPemKey();
-            Test();
+            Test(1024);
+            Test(2048);
 
+            Console.WriteLine("Success");
             Console.ReadLine();
         }
 
@@ -191,9 +193,10 @@ namespace Cn.Ubingo.Security.RSA.Test
             string aesKey = Encoding.UTF8.GetString(Convert.FromBase64String(rawData));
         }
 
-        private static void Test()
+        private static void Test(int keySize = 2048)
         {
-            const int keySize = 2048;
+            //const int keySize = 2048;
+            Console.WriteLine("=========================== 密钥长度{0} ===========================", keySize);
 
             //生成公私钥对
             KeyPair keyPair = KeyGenerator.GenerateKeyPair(KeyFormat.XML, keySize);
