@@ -1,5 +1,9 @@
-#! -*- coding:utf-8 -*-
-# 使用 pycrypto 模块
+﻿#! -*- coding:utf-8 -*-
+# 需要安装 pycrypto 模块
+# python3时会有bug，处理：修改python3安装目录下的  lib/Crypto/Random/OSRNG/nt.py 文件中找到
+# import winrandom
+# 修改为
+# from Crypto.Random.OSRNG import winrandom
 
 __author__ = 'sweet'
 
