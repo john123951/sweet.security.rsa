@@ -13,6 +13,9 @@
   "keywords": [
     "rsa"
   ],
+  "dependencies":{
+    "crypto": "*"
+  },
   "author": "sweet",
   "license": "ISC",
   "bugs": {
