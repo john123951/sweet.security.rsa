@@ -14,20 +14,47 @@ namespace Cn.Ubingo.Security.RSA.Test
     {
         private static void Main(string[] args)
         {
+            //ReadAsnKey();
             //DecryptDataMacKey();
             //TestDecryptData();
             //Generate();
-            //EncryptPrivateKey();
-            //DecryptPrivateKey();
+            //EncryptByPublicKey();
+            //DecryptByPrivateKey();
             //SignDataMicrosoft();
             //VerifySignatureMicrosoft();
             //ReadAsnKey();
             //ReadPemKey();
-            Test(1024);
-            Test(2048);
+            //Test(1024);
+            //Test(2048);
+
+            //EncryptByXmlPublicKey();
+            DecryptByXMLPrivateKey();
 
             Console.WriteLine("Success");
             Console.ReadLine();
+        }
+
+        private static void Generate()
+        {
+            const int keySize = 2048;
+
+            //生成公私钥对
+            KeyPair keyPair = KeyGenerator.GenerateKeyPair(KeyFormat.XML, keySize);
+
+            //转换成不同的格式
+            KeyPair asnKeyPair = keyPair.ToASNKeyPair();
+            KeyPair xmlKeyPair = asnKeyPair.ToXMLKeyPair();
+            KeyPair pemKeyPair = xmlKeyPair.ToPEMKeyPair();
+
+            //保存公私钥
+            File.WriteAllText("private.key", asnKeyPair.PrivateKey);
+            File.WriteAllText("public.key", asnKeyPair.PublicKey);
+
+            //XML格式
+            File.WriteAllText("private.xml", xmlKeyPair.PrivateKey);
+            File.WriteAllText("public.xml", xmlKeyPair.PublicKey);
+
+            Console.WriteLine("Generate Success");
         }
 
         private static void DecryptDataMacKey()
@@ -147,38 +174,19 @@ namespace Cn.Ubingo.Security.RSA.Test
             Console.WriteLine(data);
         }
 
-        private static void Generate()
-        {
-            const int keySize = 2048;
-
-            //生成公私钥对
-            KeyPair keyPair = KeyGenerator.GenerateKeyPair(KeyFormat.XML, keySize);
-
-            //转换成不同的格式
-            KeyPair asnKeyPair = keyPair.ToASNKeyPair();
-            KeyPair xmlKeyPair = asnKeyPair.ToXMLKeyPair();
-            KeyPair pemKeyPair = xmlKeyPair.ToPEMKeyPair();
-
-            //保存公私钥
-            File.WriteAllText("private.key", asnKeyPair.PrivateKey);
-            File.WriteAllText("public.key", asnKeyPair.PublicKey);
-
-            Console.WriteLine("Success");
-        }
-
-        private static void EncryptPrivateKey()
+        private static void EncryptByPublicKey()
         {
             string strPublic = File.ReadAllText(@"Keys\public.key");
             var publicKey = KeyPair.ImportASNKey(strPublic);
 
-            string rawData = "eyJyZXR1cm5VcmwiOiJodHRwOi8vMTI3LjAuMC4xOjkwMDMvbGNfbWVyY2hhbnQvcmV0dXJuVmlldyIsImRpZlN0YXRlVGltZVNjb3BKc29uIjoie1wiQ09ORklSTVZBTElEVElNRVwiOlwiNjA0ODAwMDAwXCIsXCJSRUNWQ1JFRFZBTElEVElNRVwiOlwiODY0MDAwMDBcIixcIlJFTUlORERJU0ZSRUVaRVZBTElEVElNRVwiOlwiNjA0ODAwMDAwXCJ9IiwicmVjZWl2ZXIiOiIiLCJwYXllckluZm9Kc29uIjoie1wiUEFZRVJNT0JJTEVcIjpcIjE4ODQ0OTYyMjMzXCIsXCJQQVlFUkJBTktJRFwiOlwiNjIxMjI2NDU4ODg4NjI0NDU5OVwifSIsInNoaXBGZWUiOiIiLCJpc0F1dG9SZWN2IjoiTSIsIm9wZW5UeXBlIjowLCJwYXllck1vYmlsZSI6IiIsImZlZVR5cGUiOiJDTlkiLCJyZWN2QmFua0NvZGUiOiJJQ0JDIiwicXVhbnRpdHkiOiIxIiwibGNOTyI6IumTtuS/oeivgSoxNzcuMDBSTUIqMTEwNTI0SUNCQzIwMTUwODA2MTY0MzE1IiwicmVjdkNvbnRhY3QiOiIiLCJpc1NoaXAiOiIiLCJtcmNoTmFtZSI6IuiejUUt57u05Lmf57qzIiwib3JkZXJJRCI6IklDQkMyMDE1MDgwNjE2NDMxNSIsImxjSUQiOiJJQ0JDXzY2OTUwNjMzMDEyMDE0NV8yMDE1MDgwNjE2NDMzMSIsIm5vdGljZVVybCI6Imh0dHA6Ly8xMjcuMC4wLjE6OTAwMy9sY19tZXJjaGFudC90cmFkZSIsInJlY3ZCYW5rQ2FyZCI6IiIsIm1yY2hPcmRlclVybCI6Imh0dHA6Ly8xMjcuMC4wLjE6OTAwMy9sY19tZXJjaGFudC93eW4vb3JkZXJEZXRhaWwiLCJ0b3RhbEZlZSI6IjE3NzAwIiwicHJpY2UiOiIxNzcwMCIsInBheWVyIjoiIiwibGNUeXBlIjoiQ1AzMDAiLCJzZXJ2aWNlIjoicmgyb2gudHJhZGUucHJlT3BlbiIsIm9wZW5CYW5rQ29kZSI6IklDQkMiLCJtaWQiOiIxMTA1MjQiLCJnb29kc05hbWUiOiLnu7TkuZ/nurPphZLlupfvvIjmt7HlnLPpvpnljY7msJHmsrvlpKfpgZPkuIfkvJfln47lupfvvIkg57uP5rWO5oi/IiwicmVjdkFkZHJlc3MiOiIiLCJwYXllckJhbmtDYXJkTk8iOiIifQ=="; ;
+            string rawData = "eyJyZXR1cm5VcmwiOiJodHRwOi8vMTI3LjAuMC4xOjkwMDMvbGNfbWVyY2hhbnQvcmV0dXJuVmlldyIsImRpZlN0YXRlVGltZVNjb3BKc29uIjoie1wiQ09ORklSTVZBTElEVElNRVwiOlwiNjA0ODAwMDAwXCIsXCJSRUNWQ1JFRFZBTElEVElNRVwiOlwiODY0MDAwMDBcIixcIlJFTUlORERJU0ZSRUVaRVZBTElEVElNRVwiOlwiNjA0ODAwMDAwXCJ9IiwicmVjZWl2ZXIiOiIiLCJwYXllckluZm9Kc29uIjoie1wiUEFZRVJNT0JJTEVcIjpcIjE4ODQ0OTYyMjMzXCIsXCJQQVlFUkJBTktJRFwiOlwiNjIxMjI2NDU4ODg4NjI0NDU5OVwifSIsInNoaXBGZWUiOiIiLCJpc0F1dG9SZWN2IjoiTSIsIm9wZW5UeXBlIjowLCJwYXllck1vYmlsZSI6IiIsImZlZVR5cGUiOiJDTlkiLCJyZWN2QmFua0NvZGUiOiJJQ0JDIiwicXVhbnRpdHkiOiIxIiwibGNOTyI6IumTtuS/oeivgSoxNzcuMDBSTUIqMTEwNTI0SUNCQzIwMTUwODA2MTY0MzE1IiwicmVjdkNvbnRhY3QiOiIiLCJpc1NoaXAiOiIiLCJtcmNoTmFtZSI6IuiejUUt57u05Lmf57qzIiwib3JkZXJJRCI6IklDQkMyMDE1MDgwNjE2NDMxNSIsImxjSUQiOiJJQ0JDXzY2OTUwNjMzMDEyMDE0NV8yMDE1MDgwNjE2NDMzMSIsIm5vdGljZVVybCI6Imh0dHA6Ly8xMjcuMC4wLjE6OTAwMy9sY19tZXJjaGFudC90cmFkZSIsInJlY3ZCYW5rQ2FyZCI6IiIsIm1yY2hPcmRlclVybCI6Imh0dHA6Ly8xMjcuMC4wLjE6OTAwMy9sY19tZXJjaGFudC93eW4vb3JkZXJEZXRhaWwiLCJ0b3RhbEZlZSI6IjE3NzAwIiwicHJpY2UiOiIxNzcwMCIsInBheWVyIjoiIiwibGNUeXBlIjoiQ1AzMDAiLCJzZXJ2aWNlIjoicmgyb2gudHJhZGUucHJlT3BlbiIsIm9wZW5CYW5rQ29kZSI6IklDQkMiLCJtaWQiOiIxMTA1MjQiLCJnb29kc05hbWUiOiLnu7TkuZ/nurPphZLlupfvvIjmt7HlnLPpvpnljY7msJHmsrvlpKfpgZPkuIfkvJfln47lupfvvIkg57uP5rWO5oi/IiwicmVjdkFkZHJlc3MiOiIiLCJwYXllckJhbmtDYXJkTk8iOiIifQ==";
 
             string data = publicKey.GenerateWorker().Encrypt(rawData);
 
             var test = publicKey.GenerateWorker().Decrypt(data);
         }
 
-        private static void DecryptPrivateKey()
+        private static void DecryptByPrivateKey()
         {
             string data = @"bYDRx+mJl9DyrMn5P6gDqBk/mLR0IKw0bN3s3nRvgobfeZQWyfd8ePfzxomcvCMFxfWUVXh7zV8rvCsbjp5ioH+T8BI9X5o2YqkOG+KSfp7N6M2s+YwT4L0PDBH0jl6RbG655JnJ8fy0ulXV1FvG7N75rtr/Jy2WzIJyUc+1b36t7jRMjjFXgn3vFiWYvOWqkVEgIwbovIX30TsvONt06gE0n7zZCVEkA1ZtI5SmKTyNZhbu+a/mZbxnaRbISCuc/wJ1F6AA0VVMnZayrVUid5FY5DKQTurlRfKX9vMCqQ1/L7z1GU2yWtSsQgh2I1Wrf6Gfx54XjZPVjX8Vj1yE2A==";
 
@@ -191,6 +199,29 @@ namespace Cn.Ubingo.Security.RSA.Test
             string rawData = privateKey.GenerateWorker().Decrypt(data);
 
             string aesKey = Encoding.UTF8.GetString(Convert.FromBase64String(rawData));
+        }
+
+        private static void EncryptByXmlPublicKey()
+        {
+            string strPublic = File.ReadAllText(@"Keys\xml_public.xml");
+            var publicKey = KeyPair.ImportXMLKey(strPublic);
+
+            string rawData = "cifpay";
+
+            string data = publicKey.GenerateWorker().Encrypt(rawData);
+            Console.WriteLine("加密结果：" + data);
+        }
+
+        private static void DecryptByXMLPrivateKey()
+        {
+            string strPrivate = File.ReadAllText(@"Keys\xml_private.xml");
+            var privateKey = KeyPair.ImportXMLKey(strPrivate);
+
+            //string rawData = "XgMMhT90rtc9nO7LkGfGdpub9iHIneVyJMbLw1C3pF/SVDOZx/S5sEwRUWPXYN2UDk6EDNB/jaT9ScrMqg0SCgEu1VTQNvlrgnDWUj/W3EnPlxc3bVlHUuJZNKAGOxiPQ9HB99Chx2P3Qah/w9uMNjG8IU2CgwSUSC6S9kXzuYNMo40OpRavYpkfcX24Nttn7XjCWLAaUMO3fT294duwpwWNGNywhnsgbwTfMw1CHGYjzaWYbWuHbOiwOOJc6MNNgragtBTZSh5GdhkWxt29q/gxq3xUGO5SRuaEKtadPtu95rpWGNmVx2SKuqVX2bsY7AlKbVbfC8UxazXQ/aTGfA==";
+            string toolData = "oC7AEHqMjr5VMi7IEt4j+Yo38iXRQ3RPt2xWyc9L1CTgyC3r93DF88+v/o0K9U4DHcVtcznC+rUtXK8BXoSiyy9ALl5pzu9BYv1Yvh82Mmi78HtTZ/Eyi5NMp6qFq6iaJVUYGsfE7K83ShYqHd0iwauc7s5RHAeNeIzLuwcl+rlxlF8dqNPSL5QLCSfpmVWyBZaRsB0p4mRiFHQkJjdkEWcnfTNrQIE3sUvL2dARXXJ8KoD40Zet9m/puUZNKFeXjlrKZXzrplYQt4ecfcmbLc/np2T/80xzv+D1+22xeY3X6A2pfD5fAp0fLmB7CfXO0rzoIi1D37hY5HlWi8w5IQ==";
+
+            string data = privateKey.GenerateWorker().Encrypt(toolData);
+            Console.WriteLine("解密结果：" + data);
         }
 
         private static void Test(int keySize = 2048)

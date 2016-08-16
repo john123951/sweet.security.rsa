@@ -117,6 +117,19 @@ namespace Cn.Ubingo.Security.RSA.Data
             return new KeyPair(rsa, KeyFormat.ASN);
         }
 
+        /// <summary>
+        /// 导入XML格式的密钥
+        /// </summary>
+        /// <param name="xmlKey"></param>
+        /// <returns></returns>
+        public static KeyPair ImportXMLKey(string xmlKey)
+        {
+            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+            rsa.FromXmlString(xmlKey);
+
+            return new KeyPair(rsa, KeyFormat.XML);
+        }
+
         public KeyPair ToASNKeyPair()
         {
             return new KeyPair(this._rsa, KeyFormat.ASN);

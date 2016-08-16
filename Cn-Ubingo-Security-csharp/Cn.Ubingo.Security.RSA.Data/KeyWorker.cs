@@ -10,6 +10,7 @@ namespace Cn.Ubingo.Security.RSA.Data
     /// <summary>
     /// 陈服建(fochen,j@ubingo.cn)
     /// 2015-01-23
+    /// PKCS1填充
     /// </summary>
     public class KeyWorker
     {
